@@ -29,8 +29,7 @@
 (asdf:defsystem #:salza2
   :components ((:file "package")
                (:file "specials"
-                      :depends-on ("package"
-                                   "crc32"))
+                      :depends-on ("package"))
                (:file "types"
                       :depends-on ("package"
                                    "specials"))

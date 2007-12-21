@@ -40,6 +40,8 @@
           (setf (aref table (ash n 1)) (ldb (byte 16 16) c)
                 (aref table (1+ (ash n 1))) (ldb (byte 16 0) c)))))))
 
+(defvar *crc32-table* (crc32-table))
+
 (defun crc32 (high low buf start count)
   (declare (type (unsigned-byte 16) high low)
            (type (integer 0 32768) count)

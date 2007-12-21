@@ -46,5 +46,3 @@
 
 (defconstant +final-block+ #b1)
 (defconstant +fixed-tables+ #b01)
-
-(defparameter *crc32-table* (crc32-table))
