@@ -28,13 +28,18 @@
 
 (in-package #:salza2)
 
-(defvar *gzip-signature*
-  (make-array 2
-              :element-type '(unsigned-byte 8)
-              :initial-contents '(#x1F #x8B)))
+(defvar *gzip-signature* (octet-vector #x1F #x8B)
+  "These two octets precede all data in the gzip format.")
+
+(defconstant +gzip-fast-compression+ 4
+  "Code for gzip compression level. This is present only to create valid
+gzip data; it has no meaning to the compressor and is only a hint to
+the decompressor.")
+
+;;; These are all used to create valid files, not to control or modify
+;;; the compression process.
 
 (defconstant +gzip-deflate-compression+ 8)
-(defconstant +gzip-fast-compression+ 4)
 (defconstant +gzip-flags+ 0)
 (defconstant +gzip-unix-os+ 3)
 (defconstant +gzip-mtime+ 0)
