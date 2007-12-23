@@ -170,7 +170,7 @@ with OUTPUT, a starting offset, and the count of pending data."
                                        &rest initargs
                                        &key
                                        literal-fun length-fun distance-fun
-                                       byte-fun compress-fun
+                                       compress-fun
                                        callback)
   (declare (ignore initargs))
   (let ((bitstream (bitstream compressor)))
@@ -185,8 +185,6 @@ with OUTPUT, a starting offset, and the count of pending data."
     (setf (distance-fun compressor)
           (or distance-fun (make-huffman-writer *distance-codes*
                                                 bitstream)))
-    (setf (byte-fun compressor)
-          (or byte-fun (make-byte-writer bitstream)))
     (setf (compress-fun compressor)
           (or compress-fun (make-compress-fun compressor)))
     (start-data-format compressor)))

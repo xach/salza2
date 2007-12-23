@@ -40,10 +40,3 @@
                         buffer
                         (bits bitstream)
                         callback)))))
-
-(defun make-byte-writer (bitstream)
-  (let ((buffer (buffer bitstream))
-        (callback (callback bitstream)))
-    (lambda (byte)
-      (setf (bits bitstream)
-            (merge-byte byte buffer (bits bitstream) callback)))))
