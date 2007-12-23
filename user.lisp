@@ -28,14 +28,6 @@
 
 (in-package #:salza2)
 
-(defmacro with-compressor ((var &key (class 'zlib-compressor) callback)
-                           &body body)
-  `(let ((,var (make-instance ,class
-                              ,@(when callback (list :callback callback)))))
-     (multiple-value-prog1 
-         (progn ,@body)
-       (finish-compression ,var))))
-
 (defun gzip-stream (input output)
   (let ((callback (lambda (data end)
                     (write-sequence data
