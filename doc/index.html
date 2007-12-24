@@ -23,8 +23,153 @@ DEFLATE, or GZIP data formats, described in
 <a href="http://ietf.org/rfc/rfc1952.txt">RFC 1952</a>, respectively.
 It is written in pure Common Lisp and does not use any external
 libraries for compression. It does not yet support decompression.
-
-<p>Salza2 is available under a <a href="COPYING.txt">BSD-like
+Salza2 is available under a <a href="COPYING.txt">BSD-like
 license</a>. The current version is 1.0, released on December XXXths,
 2007.
+
+<p class='download'>Download shortcut:
+
+<p><a href="http://www.xach.com/lisp/salza2.tgz">http://www.xach.com/lisp/salza2.tgz</a>
+
+</blockquote>
+
+<a name='sect-overview-and-limitations'><h3>Overview and Limitations</h3></a>
+
+<p>Salza2 provides an interface for creating a compressor object. This
+  object acts as a sink for octets (either individual octets or
+  vectors of octets), and is a source for octets in a compressed data
+  format. The compressed octet data is provided to a user-defined
+  callback that can write it to a stream, copy it to another vector,
+  etc.
+
+<p>Salza2 has built-in compressors that support the ZLIB, DEFLATE, and
+  GZIP data formats. The classes and generic function protocol are
+  available to make it easy to support similar formats via subclassing
+  and new methods. Internally, ZLIB and GZIP are simple extensions to
+  the DEFLATE format and are implemented as simple subclasses with a
+  few methods added to the protocol.
+
+<p>There are a number of functions that provide a simple interface to
+  specific tasks such as gzipping a file or compressing a single
+  vector.
+
+<p>Salza2 does not decode compressed data. There is no support for
+  dynamically defined Huffman codes. There is currently no interface
+  for changing the tradeoff between compression speed and compressed
+  data size.
+
+
+
+<a name='sect-examples'><h3>Examples</h3></a>
+
+<a name='sect-bitstreams'><h3>Bitstreams</h3></a>
+
+Compressors are built upon bitstream objects. Bitstreams act as a sink
+for bits and octets and are responsible for invoking the user callback
+when necessary: whenever the bitstream internal buffer is full, and
+one final time at the end of all input, to complete the data format.
+
+Methods specialized on subclasses may need to access the compressor's
+bitstream directly to write data format metadata to the output
+stream. They are not normally accessed simply for producing standard
+compressed data formats.
+
+[Function]
+write-bit code size bitstream => |
+
+Write size bits of code to bitstream. Follows the bit packing layout
+described in RFC 1951.
+
+
+[Function]
+write-octet octet bitstream
+
+Write octet to the bitstream. Bits of the octet are *not* packed; the
+octet is added to the bitstream at the next octet boundary.
+ 
+
+
+
+
+<a name='sect-compressors'><h3>Compressors</h3></a>
+
+[Accessor]
+bitstream compressor => bitstream
+
+Returns the bitstream associated with compressor.
+
+
+[Generic Function]
+start-data-format compressor => |
+
+Outputs any prologue bits or octets needed to produce a valid
+compressed data stream for compressor. Called from initialize-instance
+for subclasses of deflate-compressor. This generic function should not
+be called directly, but may be specialized.
+
+
+[Generic Function]
+compress-octet octet compressor => |
+
+Sends octet to compressor. Intended to be called directly from
+programs that need to compress data.
+
+
+[Generic Function]
+compress-octet-vector vector compressor &key start end => |
+
+Adds the octets from vector beginning with start and ending before
+end. Intended to be called directly from programs that need to
+compress data.
+
+
+[Generic Function]
+process-input compressor data start count => |
+
+Called when count octets of data, starting from start, are about to be
+compressed. This generic function should not be called directly, but
+may be specialized.
+
+This is useful for data formats that must maintain information about
+the uncompressed contents of a compressed data stream, such as
+checksums or total data length.
+
+
+[Generic Function]
+finish-data-format compressor => |
+
+Called by finish-compression. Outputs any epilogue bits or octets
+needed to produce a valid compressed data stream for compressor. This
+generic function should not be called directly, but may be
+specialized.
+
+
+[Generic Function]
+finish-compression compressor => |
+
+Concludes any output to the compressed data stream with
+finish-data-format and calls flush to invoke the user callback for the
+final octets of the compressed data format.
+
+
+
+
+[Generic Function]
+
+
+
+<a name='with-compressor'>[Macro]<br>
+<b>with-compressor</b> (<i>var</i> <tt>&amp;key</tt> 
+<i>class</i> 
+<i>callback</i>) 
+<tt>&amp;body</tt> body
+
+<blockquote>
+Evaluates <i>body</i> with <i>var</i> bound to a newly created
+compressor object of class <i>class</i>. <i>callback</i> should be a
+function as
+with <a href='#callback'><tt>CALLBACK</tt></a>. <a href='#finish-compression'><tt>FINISH-COMPRESSION</tt></a>
+is called on the compressor at the end of evaluation.
+</blockquote>
+
 
