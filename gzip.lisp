@@ -80,3 +80,7 @@ the decompressor.")
   (let ((bitstream (bitstream compressor)))
     (gzip-write-u32 (result (checksum compressor)) bitstream)
     (gzip-write-u32 (data-length compressor) bitstream)))
+
+(defmethod reset :after ((compressor gzip-compressor))
+  (reset (checksum compressor))
+  (setf (data-length compressor) 0))

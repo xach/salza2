@@ -29,13 +29,16 @@
 (asdf:defsystem #:salza2
   :version "2.0"
   :components ((:file "package")
+               (:file "reset"
+                      :depends-on ("package"))
                (:file "specials"
                       :depends-on ("package"))
                (:file "types"
                       :depends-on ("package"
                                    "specials"))
                (:file "checksum"
-                      :depends-on ("package"))
+                      :depends-on ("package"
+                                   "reset"))
                (:file "adler32"
                       :depends-on ("checksum"))
                (:file "crc32"
@@ -44,7 +47,8 @@
                       :depends-on ("package"
                                    "specials"))
                (:file "bitstream"
-                      :depends-on ("package"))
+                      :depends-on ("package"
+                                   "reset"))
                (:file "matches"
                       :depends-on ("package"
                                    "types"))
@@ -61,16 +65,19 @@
                                    "closures"
                                    "utilities"
                                    "specials"
-                                   "bitstream"))
+                                   "bitstream"
+                                   "reset"))
                (:file "utilities"
                       :depends-on ("package"))
                (:file "zlib"
                       :depends-on ("package"
                                    "adler32"
+                                   "reset"
                                    "compressor"))
                (:file "gzip"
                       :depends-on ("package"
                                    "crc32"
+                                   "reset"
                                    "compressor"))
                (:file "user"
                       :depends-on ("package"

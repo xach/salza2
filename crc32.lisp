@@ -91,3 +91,7 @@
 
 (defmethod result-octets ((checksum crc32-checksum))
   (ub32-octets (result checksum)))
+
+(defmethod reset ((checksum crc32-checksum))
+  (setf (low checksum) #xFFFF
+        (high checksum) #xFFFF))

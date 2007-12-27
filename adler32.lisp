@@ -92,3 +92,7 @@
                         buffer
                         start
                         count)))
+
+(defmethod reset ((checksum adler32-checksum))
+  (setf (high checksum) 0
+        (low checksum) 1))

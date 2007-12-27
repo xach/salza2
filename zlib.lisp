@@ -50,3 +50,5 @@
     (dolist (octet (result-octets (adler32 compressor)))
       (write-octet octet bitstream))))
 
+(defmethod reset :after ((compressor zlib-compressor))
+  (reset (adler32 compressor)))

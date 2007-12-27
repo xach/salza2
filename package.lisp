@@ -29,6 +29,8 @@
 (defpackage #:salza2
   (:use #:cl)
   (:export
+   ;; misc
+   #:reset
    ;; bitstream
    #:bitstream
    #:write-bits

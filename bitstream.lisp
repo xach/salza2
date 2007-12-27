@@ -145,3 +145,6 @@
     (funcall (callback bitstream) (buffer bitstream) end)
     (setf (bits bitstream) 0)))
 
+(defmethod reset ((bitstream bitstream))
+  (fill (buffer bitstream) 0)
+  (setf (bits bitstream) 0))

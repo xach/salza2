@@ -32,10 +32,14 @@
   (make-array 65536 :element-type 'octet))
 
 (defun make-chains ()
-  (make-array 65536 :element-type '(unsigned-byte 16)))
+  (make-array 65536
+              :element-type '(unsigned-byte 16)
+              :initial-element 0))
 
 (defun make-hashes ()
-  (make-array +hashes-size+ :element-type '(unsigned-byte 16)))
+  (make-array +hashes-size+
+              :element-type '(unsigned-byte 16)
+              :initial-element 0))
 
 (defun error-missing-callback (&rest args)
   (declare (ignore args))
@@ -252,6 +256,16 @@ with OUTPUT, a starting offset, and the count of pending data."
                   literal-fun
                   length-fun
                   distance-fun)))))
+
+(defmethod reset ((compressor deflate-compressor))
+  (fill (chains compressor) 0)
+  (fill (input compressor) 0)
+  (fill (hashes compressor) 0)
+  (setf (start compressor) 0
+        (end compressor) 0
+        (counter compressor) 0)
+  (reset (bitstream compressor))
+  (start-data-format compressor))
 
 
 (defmacro with-compressor ((var &key (class 'zlib-compressor) callback)
