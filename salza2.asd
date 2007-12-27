@@ -60,6 +60,7 @@
                       :depends-on ("package"
                                    "closures"
                                    "utilities"
+                                   "specials"
                                    "bitstream"))
                (:file "utilities"
                       :depends-on ("package"))
