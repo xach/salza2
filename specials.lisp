@@ -35,7 +35,7 @@
 
 (defparameter +input-size+ #x10000)
 (defparameter +input-mask+ #x0FFFF)
-(defparameter +hashes-size+ 8209)
+(defparameter +hashes-size+ 8191)
 (defparameter +radix+ 109)
 (defparameter +rmax+ (* +radix+ +radix+))
 
