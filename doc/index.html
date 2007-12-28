@@ -62,103 +62,107 @@ license</a>. The current version is 1.0, released on December XXXths,
 
 <a name='sect-examples'><h3>Examples</h3></a>
 
-<a name='sect-bitstreams'><h3>Bitstreams</h3></a>
 
-Compressors are built upon bitstream objects. Bitstreams act as a sink
-for bits and octets and are responsible for invoking the user callback
-when necessary: whenever the bitstream internal buffer is full, and
-one final time at the end of all input, to complete the data format.
-
-Methods specialized on subclasses may need to access the compressor's
-bitstream directly to write data format metadata to the output
-stream. They are not normally accessed simply for producing standard
-compressed data formats.
-
-[Function]
-write-bit code size bitstream => |
-
-Write size bits of code to bitstream. Follows the bit packing layout
-described in RFC 1951.
-
-
-[Function]
-write-octet octet bitstream
-
-Write octet to the bitstream. Bits of the octet are *not* packed; the
-octet is added to the bitstream at the next octet boundary.
- 
 
 
 
 
 <a name='sect-compressors'><h3>Compressors</h3></a>
 
-[Accessor]
-bitstream compressor => bitstream
+<p><a name='deflate-compressor'
+><a name='zlib-compressor'><a name='gzip-compressor'>[Standard
+        classes]</a></a></a><br>
+<b>deflate-compressor</b><br>
+<b>zlib-compressor</b><br>
+<b>gzip-compressor</b>
 
-Returns the bitstream associated with compressor.
-
-
-[Generic Function]
-start-data-format compressor => |
-
-Outputs any prologue bits or octets needed to produce a valid
-compressed data stream for compressor. Called from initialize-instance
-for subclasses of deflate-compressor. This generic function should not
-be called directly, but may be specialized.
-
-
-[Generic Function]
-compress-octet octet compressor => |
-
-Sends octet to compressor. Intended to be called directly from
-programs that need to compress data.
+<blockquote>
+Instances of these classes may be created via make-instance. The only
+supported initarg is <tt>:CALLBACK</tt>
+(see <a href='#callback'><tt>CALLBACK</tt></a> for the expected
+value).
+</blockquote>
 
 
-[Generic Function]
-compress-octet-vector vector compressor &key start end => |
+<p><a name='callback'>[Generic Function]</a><br>
+<b>callback</b> <i>compressor</i> => <i>callback</i><br>
+(<tt>setf</tt> (<b>callback</b> <i>compressor</i>) <i>new-value</i>) => <i>new-value</i>
 
-Adds the octets from vector beginning with start and ending before
-end. Intended to be called directly from programs that need to
-compress data.
+<blockquote>
+Gets or sets the callback function of <i>compressor</i>. The callback
+should be a function of two arguments, an octet vector and an end
+index, and it should process all octets from the start of the vector
+below the end index as the compressed output data stream of the
+compressor.
 
+<p>For example, you could create a callback that writes the compressed
+  data format to a stream like this:
 
-[Generic Function]
-process-input compressor data start count => |
+<pre>
+(defun make-stream-callback (stream)
+  (lambda (buffer end)
+    (write-sequence buffer stream :end end)))
+</pre>
 
-Called when count octets of data, starting from start, are about to be
-compressed. This generic function should not be called directly, but
-may be specialized.
+</blockquote>
 
-This is useful for data formats that must maintain information about
-the uncompressed contents of a compressed data stream, such as
-checksums or total data length.
+<p><a name='compress-octet'>[Generic Function]</a><br>
+<b>compress-octet</b> <i>octet</i> <i>compressor</i> => |
 
-
-[Generic Function]
-finish-data-format compressor => |
-
-Called by finish-compression. Outputs any epilogue bits or octets
-needed to produce a valid compressed data stream for compressor. This
-generic function should not be called directly, but may be
-specialized.
-
-
-[Generic Function]
-finish-compression compressor => |
-
-Concludes any output to the compressed data stream with
-finish-data-format and calls flush to invoke the user callback for the
-final octets of the compressed data format.
+<blockquote>
+Adds <i>octet</i> to <i>compressor</i> to be compressed. Should be
+called directly from programs that need to compress data.
+</blockquote>
 
 
+<p><a name='compress-octet-vector'>[Generic Function]</a><br>
+<b>compress-octet-vector</b> <i>vector</i> <i>compressor</i> <tt>&key</tt>
+ <i>start</i> <i>end</i> => |
+
+<blockquote>
+Adds the octets from <i>vector</i> to <i>compressor</i> to be
+compressed, beginning with the octet at <i>start</i> and ending at the
+octet at
+<i>end</i> - 1. If <i>start</i> is not specified, it defaults to
+0. If <i>end</i> is not specified, it defaults to the total length
+of <i>vector</i>. Should be called directly from programs that need to
+compress data. Equivalent to (but much more efficient than) the
+following:
+
+<pre>
+(loop for i from start below end
+      do (compress-octet (aref vector i) compressor))
+</pre>
+
+</blockquote>
 
 
-[Generic Function]
+
+
+<p><a name='finish-compression'>[Generic Function]</a><br>
+<b>finish-compression</b> <i>compressor</i> => |
+
+<blockquote>Compresses any pending output data, concludes the data
+  format for <i>compressor</i> with
+<a href='#finish-data-format'><tt>FINISH-DATA-FORMAT</tt></a>, and
+invokes the user callback for the final octets of the compressed data
+format.
+</blockquote>
 
 
 
-<a name='with-compressor'>[Macro]<br>
+<p><a name='reset'>[Generic Function]</a><br>
+<b>reset</b> <i>compressor</i> => |
+
+<blockquote>
+Resets the internal state of <i>compressor</i> and
+calls <a href='#start-data-format'><tt>START-DATA-FORMAT</tt></a>. This
+can be used to re-use a single compressor object for multiple
+compression tasks.
+</blockquote>
+
+
+<p><a name='with-compressor'>[Macro]<br>
 <b>with-compressor</b> (<i>var</i> <tt>&amp;key</tt> 
 <i>class</i> 
 <i>callback</i>) 
@@ -167,9 +171,159 @@ final octets of the compressed data format.
 <blockquote>
 Evaluates <i>body</i> with <i>var</i> bound to a newly created
 compressor object of class <i>class</i>. <i>callback</i> should be a
-function as
-with <a href='#callback'><tt>CALLBACK</tt></a>. <a href='#finish-compression'><tt>FINISH-COMPRESSION</tt></a>
-is called on the compressor at the end of evaluation.
+function as described
+by <a href='#callback'><tt>CALLBACK</tt></a>. <a href='#finish-compression'><tt>FINISH-COMPRESSION</tt></a>
+is implicitly called on the compressor at the end of evaluation.
 </blockquote>
+
+
+<a name="sect-custom-compressors"><h3>Custom Compressors</h3></a>
+
+<p>Compressor objects follow a protocol that makes it easy to create
+  specialized data formats. For example, the ZLIB data format is
+  essentially the same as the DEFLATE format with an additional header
+  and a trailing checksum; this is implemented by creating a new class
+  and adding a few new methods to the generic functions below.
+
+<p>For example, consider a new compressed data format FOO that
+  encapsulates a DEFLATE data stream but adds four signature octets,
+  F0 0D 00 D1, to the start of the output data stream, and adds a
+  trailing 32-bit length value, MSB first, after the end. It could be
+  implemented like this:
+
+<pre>
+(defclass foo-compressor (deflate-compressor)
+  ((data-length
+    :initarg :data-length
+    :accessor data-length))
+  (:default-initargs
+   :data-length 0))
+
+(defmethod <a href='#start-data-format'>start-data-format</a> :before ((compressor foo-compressor))
+  (<a href='#write-octet'>write-octet</a> #xF0 compressor)
+  (write-octet #x0D compressor)
+  (write-octet #x00 compressor)
+  (write-octet #xD1 compressor))
+
+(defmethod <a href='#process-input'>process-input</a> :after ((compressor foo-compressor) input start count)
+  (declare (ignore input start))
+  (incf (data-length compressor) count))
+
+(defmethod <a href='#finish-data-format'>finish-data-format</a> :after ((compressor foo-compressor))
+  (let ((length (data-length compressor)))
+    (write-octet (ldb (byte 8 24) length) compressor)
+    (write-octet (ldb (byte 8 16) length) compressor)
+    (write-octet (ldb (byte 8  8) length) compressor)
+    (write-octet (ldb (byte 8  0) length) compressor)))
+</pre>
+
+
+<p><a name='write-bits'>[Function]</a><br>
+<b>write-bits</b> <i>code</i> <i>size</i> <i>compressor</i> => |
+
+<blockquote>
+Writes <i>size</i> low bits of the integer <i>code</i> to the output
+buffer of <i>compressor</i>. Follows the bit packing layout described
+in <a href="http://ietf.org/rfc/rfc1951.txt">RFC 1951</a>. The bits
+are not compressed, but become literal parts of the output stream.
+</blockquote>
+
+
+<p><a name='write-octet'>[Function]</a><br>
+<b>write-octet</b> <i>octet</i> <i>compressor</i> => |
+
+<blockquote>
+Writes <i>octet</i> to the output buffer of <i>compressor</i>. Bits of the
+octet are <i>not</i> packed; the octet is added to the output buffer
+at the next octet boundary. The octet is not compressed, but becomes a
+literal part of the output stream.
+</blockquote>
+
+
+<p><a name='start-data-format'>[Generic Function]</a><br>
+<b>start-data-format</b> <i>compressor</i> => |
+
+<blockquote>
+Outputs any prologue bits or octets needed to produce a valid
+compressed data stream for <i>compressor</i>. Called from
+initialize-instance and <a href='#reset'><tt>RESET</tt></a> for
+subclasses of deflate-compressor. Should not be called directly, but
+subclasses may add methods to customize what literal data is added to
+the beginning of the output buffer.
+</blockquote>
+
+
+<p><a name='process-input'>[Generic Function]</a><br>
+<b>process-input</b> <i>compressor</i> <i>input</i> 
+<i>start</i> <i>count</i> => |
+
+<blockquote>
+Called when <i>count</i> octets of the octet vector <i>input</i>,
+starting from <i>start</i>, are about to be compressed. This generic
+function should not be called directly, but may be specialized.
+
+<p>This is useful for data formats that must maintain information about
+the uncompressed contents of a compressed data stream, such as
+checksums or total data length.
+</blockquote>
+
+
+<p><a name='finish-data-format'>[Generic Function]</a><br>
+<b>finish-data-format</b> <i>compressor</i> => |
+
+<blockquote>
+Called
+by <a href='#finish-compression'><tt>FINISH-COMPRESSION</tt></a>. Outputs
+any epilogue bits or octets needed to produce a valid compressed data
+stream for compressor. This generic function should not be called
+directly, but may be specialized.
+</blockquote>
+
+
+<a name='sect-checksums'><h3>Checksums</h3></a>
+
+<p>Checksums are used in several data formats to check data
+  integrity. For example, PNG uses a CRC32 checksum for its chunks of
+  data. Salza2 exports support for two common checksums.
+
+<p><a name='adler32-checksum'><a name='crc32-checksum'>[Standard classes]</a></a><br>
+<b>adler32-checksum</b><br>
+<b>crc32-checksum</b>
+
+<blockquote>
+Instances of these classes may be created directly with
+make-instance.
+</blockquote>
+
+<p><a name='update'>[Generic function]</a><br>
+<b>update</b> <i>checksum</i> <i>buffer</i> <i>start</i> <i>count</i>
+=> |
+
+<blockquote>
+Updates <i>checksum</i> with <i>count</i> octets from the octet
+vector <i>buffer</i>, starting at <i>start</i>.
+</blockquote>
+
+
+<p><a name='result'>[Generic function]</a><br>
+<b>result</b> <i>checksum</i> => <i>result</i>
+
+<blockquote>
+Returns the accumulated value of <i>checksum</i> as an integer.
+</blockquote>
+
+
+<p><a name='result-octets'>[Generic function]</a><br>
+<b>result-octets</b> <i>checksum</i> => <i>result-list</i>
+
+<blockquote>
+Returns the individual octets of <i>checksum</i> as a list of octets,
+in MSB order.
+</blockquote>
+
+
+
+
+
 
 
