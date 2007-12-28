@@ -31,15 +31,12 @@
   (:export
    ;; misc
    #:reset
-   ;; bitstream
-   #:bitstream
+   ;; compressor
+   #:deflate-compressor
+   #:callback
    #:write-bits
    #:write-octet
    #:write-octet-vector
-   #:flush
-   #:callback
-   ;; compressor
-   #:deflate-compressor
    #:start-data-format
    #:compress-octet
    #:compress-octet-vector

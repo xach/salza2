@@ -36,19 +36,17 @@
    :adler32 (make-instance 'adler32-checksum)))
 
 (defmethod start-data-format :before ((compressor zlib-compressor))
-  (let ((bitstream (bitstream compressor)))
-    ;; FIXME: Replace these naked constants with symbolic constants.
-    (write-octet 8 bitstream)
-    (write-octet 153 bitstream)))
+  ;; FIXME: Replace these naked constants with symbolic constants.
+  (write-octet 8 compressor)
+  (write-octet 153 compressor))
 
 (defmethod process-input :after ((compressor zlib-compressor) input start count)
   (let ((checksum (adler32 compressor)))
     (update checksum input start count)))
 
 (defmethod finish-data-format :after ((compressor zlib-compressor))
-  (let ((bitstream (bitstream compressor)))
-    (dolist (octet (result-octets (adler32 compressor)))
-      (write-octet octet bitstream))))
+  (dolist (octet (result-octets (adler32 compressor)))
+    (write-octet octet compressor)))
 
 (defmethod reset :after ((compressor zlib-compressor))
   (reset (adler32 compressor)))

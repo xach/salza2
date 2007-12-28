@@ -193,8 +193,23 @@ with OUTPUT, a starting offset, and the count of pending data."
           (or compress-fun (make-compress-fun compressor)))
     (start-data-format compressor)))
 
-(defmethod (setf callback) (new-fun compressor)
+;;; A few methods defer to the bitstream
+
+(defmethod (setf callback) (new-fun (compressor deflate-compressor))
   (setf (callback (bitstream compressor)) new-fun))
+
+(defmethod write-bits (code size (compressor deflate-compressor))
+  (write-bits code size (bitstream compressor)))
+
+(defmethod write-octet (octet (compressor deflate-compressor))
+  (write-octet octet (bitstream compressor)))
+
+(defmethod write-octet-vector (vector (compressor deflate-compressor)
+                               &key (start 0) end)
+  (write-octet-vector vector (bitstream compressor)
+                      :start start
+                      :end end))
+                               
 
 (defmethod start-data-format ((compressor deflate-compressor))
   (let ((bitstream (bitstream compressor)))
