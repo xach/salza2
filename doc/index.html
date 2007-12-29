@@ -45,9 +45,10 @@ license</a>. The current version is 1.0, released on December XXXths,
 <p>Salza2 has built-in compressors that support the ZLIB, DEFLATE, and
   GZIP data formats. The classes and generic function protocol are
   available to make it easy to support similar formats via subclassing
-  and new methods. Internally, ZLIB and GZIP are simple extensions to
-  the DEFLATE format and are implemented as simple subclasses with a
-  few methods added to the protocol.
+  and new methods. ZLIB and GZIP are extensions to the DEFLATE format
+  and are implemented as subclasses
+  of <a href='#deflate-compressor'><tt>DEFLATE-COMPRESSOR</tt></a>
+  with a few methods implemented for the protocol.
 
 <p>There are a number of functions that provide a simple interface to
   specific tasks such as gzipping a file or compressing a single
@@ -84,9 +85,10 @@ value).
 </blockquote>
 
 
-<p><a name='callback'>[Generic Function]</a><br>
+<p><a name='callback'>[Accessor]</a><br>
 <b>callback</b> <i>compressor</i> => <i>callback</i><br>
-(<tt>setf</tt> (<b>callback</b> <i>compressor</i>) <i>new-value</i>) => <i>new-value</i>
+(<tt>setf</tt> (<b>callback</b> <i>compressor</i>) <i>new-value</i>) 
+=> <i>new-value</i>
 
 <blockquote>
 Gets or sets the callback function of <i>compressor</i>. The callback
@@ -106,7 +108,7 @@ compressor.
 
 </blockquote>
 
-<p><a name='compress-octet'>[Generic Function]</a><br>
+<p><a name='compress-octet'>[Function]</a><br>
 <b>compress-octet</b> <i>octet</i> <i>compressor</i> => |
 
 <blockquote>
@@ -115,7 +117,7 @@ called directly from programs that need to compress data.
 </blockquote>
 
 
-<p><a name='compress-octet-vector'>[Generic Function]</a><br>
+<p><a name='compress-octet-vector'>[Function]</a><br>
 <b>compress-octet-vector</b> <i>vector</i> <i>compressor</i> <tt>&key</tt>
  <i>start</i> <i>end</i> => |
 
@@ -137,9 +139,7 @@ following:
 </blockquote>
 
 
-
-
-<p><a name='finish-compression'>[Generic Function]</a><br>
+<p><a name='finish-compression'>[Generic function]</a><br>
 <b>finish-compression</b> <i>compressor</i> => |
 
 <blockquote>Compresses any pending output data, concludes the data
@@ -150,8 +150,7 @@ format.
 </blockquote>
 
 
-
-<p><a name='reset'>[Generic Function]</a><br>
+<p><a name='reset'>[Generic function]</a><br>
 <b>reset</b> <i>compressor</i> => |
 
 <blockquote>
@@ -163,10 +162,10 @@ compression tasks.
 
 
 <p><a name='with-compressor'>[Macro]<br>
-<b>with-compressor</b> (<i>var</i> <tt>&amp;key</tt> 
-<i>class</i> 
-<i>callback</i>) 
-<tt>&amp;body</tt> body
+<b>with-compressor</b> (<i>var</i> <i>class</i> 
+<tt>&amp;rest</tt> <i>initargs</i> 
+<tt>&amp;key</tt> <tt>&allow-other-keys</tt>)
+<tt>&amp;body</tt> <i>body</i> => |
 
 <blockquote>
 Evaluates <i>body</i> with <i>var</i> bound to a newly created
@@ -240,7 +239,7 @@ literal part of the output stream.
 </blockquote>
 
 
-<p><a name='start-data-format'>[Generic Function]</a><br>
+<p><a name='start-data-format'>[Generic function]</a><br>
 <b>start-data-format</b> <i>compressor</i> => |
 
 <blockquote>
@@ -253,7 +252,7 @@ the beginning of the output buffer.
 </blockquote>
 
 
-<p><a name='process-input'>[Generic Function]</a><br>
+<p><a name='process-input'>[Generic function]</a><br>
 <b>process-input</b> <i>compressor</i> <i>input</i> 
 <i>start</i> <i>count</i> => |
 
@@ -268,7 +267,7 @@ checksums or total data length.
 </blockquote>
 
 
-<p><a name='finish-data-format'>[Generic Function]</a><br>
+<p><a name='finish-data-format'>[Generic function]</a><br>
 <b>finish-data-format</b> <i>compressor</i> => |
 
 <blockquote>
