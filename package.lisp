@@ -43,6 +43,7 @@
    #:process-input
    #:finish-data-format
    #:finish-compression
+   #:with-compressor
    ;; zlib
    #:zlib-compressor
    ;; gzip
@@ -54,10 +55,6 @@
    #:adler32-checksum
    #:crc32-checksum
    ;; user
-   #:with-compressor
    #:gzip-stream
    #:gzip-file
-   #:compress-data
-   #:deflate-compress
-   #:zlib-compress
-   #:gzip-compress))
+   #:compress-data))

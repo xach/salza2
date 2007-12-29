@@ -54,15 +54,23 @@ writes all compressed data to STREAM."
       (gzip-stream istream ostream)))
   (probe-file output))
 
-(defun compress-data (data compressor-class)
+
+(defun compressor-designator-compressor (designator)
+  (etypecase designator
+    (symbol (make-instance designator))
+    (deflate-compressor designator)))
+
+(defun compress-data (data compressor-designator)
   (let ((chunks '())
-        (size 0))
-    (with-compressor (compressor compressor-class
-                                 :callback (lambda (buffer end)
-                                             (incf size end)
-                                             (push (subseq buffer 0 end)
-                                                   chunks)))
-      (salza2:compress-octet-vector data compressor))
+        (size 0)
+        (compressor (compressor-designator-compressor compressor-designator)))
+    (setf (callback compressor)
+          (lambda (buffer end)
+            (incf size end)
+            (push (subseq buffer 0 end)
+                  chunks)))
+    (compress-octet-vector data compressor)
+    (finish-compression compressor)
     (let ((compressed (make-array size :element-type '(unsigned-byte 8)))
           (start 0))
       (dolist (chunk (nreverse chunks))
