@@ -82,8 +82,8 @@
 (defmethod update ((checksum crc32-checksum) input start count)
   (setf (values (high checksum)
                 (low checksum))
-        (salza2::crc32 (high checksum) (low checksum)
-                       input start count)))
+        (crc32 (high checksum) (low checksum)
+               input start count)))
 
 (defmethod result ((checksum crc32-checksum))
   (+ (ash (logxor (high checksum) #xFFFF) 16)
