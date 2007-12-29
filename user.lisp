@@ -28,11 +28,14 @@
 
 (in-package #:salza2)
 
+(defun make-stream-output-callback (stream)
+  "Return a function suitable for use as a compressor callback that
+writes all compressed data to STREAM."
+  (lambda (buffer end)
+    (write-sequence buffer stream :end end)))
+
 (defun gzip-stream (input output)
-  (let ((callback (lambda (data end)
-                    (write-sequence data
-                                    output
-                                    :end end)))
+  (let ((callback (make-stream-output-callback output))
         (buffer (make-array 8192 :element-type '(unsigned-byte 8))))
     (with-compressor (compressor 'gzip-compressor
                                  :callback callback)
