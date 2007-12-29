@@ -55,6 +55,7 @@
    #:adler32-checksum
    #:crc32-checksum
    ;; user
+   #:make-stream-output-callback
    #:gzip-stream
    #:gzip-file
    #:compress-data))
