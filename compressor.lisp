@@ -283,10 +283,11 @@ with OUTPUT, a starting offset, and the count of pending data."
   (start-data-format compressor))
 
 
-(defmacro with-compressor ((var &key (class 'zlib-compressor) callback)
+(defmacro with-compressor ((var class
+                                &rest initargs
+                                &key &allow-other-keys)
                            &body body)
-  `(let ((,var (make-instance ,class
-                              ,@(when callback (list :callback callback)))))
+  `(let ((,var (make-instance ,class ,@initargs)))
      (multiple-value-prog1 
          (progn ,@body)
        (finish-compression ,var))))

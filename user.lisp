@@ -34,7 +34,7 @@
                                     output
                                     :end end)))
         (buffer (make-array 8192 :element-type '(unsigned-byte 8))))
-    (with-compressor (compressor :class 'gzip-compressor
+    (with-compressor (compressor 'gzip-compressor
                                  :callback callback)
       (loop
        (let ((end (read-sequence buffer input)))
@@ -54,7 +54,7 @@
 (defun compress-data (data compressor-class)
   (let ((chunks '())
         (size 0))
-    (with-compressor (compressor :class compressor-class
+    (with-compressor (compressor compressor-class
                                  :callback (lambda (buffer end)
                                              (incf size end)
                                              (push (subseq buffer 0 end)
