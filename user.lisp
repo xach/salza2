@@ -55,15 +55,16 @@ writes all compressed data to STREAM."
   (probe-file output))
 
 
-(defun compressor-designator-compressor (designator)
+(defun compressor-designator-compressor (designator initargs)
   (etypecase designator
-    (symbol (make-instance designator))
+    (symbol (apply #'make-instance designator initargs))
     (deflate-compressor designator)))
 
-(defun compress-data (data compressor-designator)
+(defun compress-data (data compressor-designator &rest initargs)
   (let ((chunks '())
         (size 0)
-        (compressor (compressor-designator-compressor compressor-designator)))
+        (compressor (compressor-designator-compressor compressor-designator
+                                                      initargs)))
     (setf (callback compressor)
           (lambda (buffer end)
             (incf size end)
@@ -77,15 +78,3 @@ writes all compressed data to STREAM."
         (replace compressed chunk :start1 start)
         (incf start (length chunk)))
       compressed)))
-
-(defun deflate-compress (data)
-  (compress-data data 'deflate-compressor))
-
-(defun zlib-compress (data)
-  (compress-data data 'zlib-compressor))
-
-(defun gzip-compress (data)
-  (compress-data data 'gzip-compressor))
-
-
-
