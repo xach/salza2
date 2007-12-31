@@ -24,7 +24,7 @@ DEFLATE, or GZIP data formats, described in
 It is written in pure Common Lisp and does not use any external
 libraries for compression. It does not yet support decompression.
 Salza2 is available under a <a href="COPYING.txt">BSD-like
-license</a>. The current version is 1.0, released on December XXXths,
+license</a>. The current version is 2.0, released on December 31st,
 2007.
 
 <p class='download'>Download shortcut:
@@ -32,6 +32,67 @@ license</a>. The current version is 1.0, released on December XXXths,
 <p><a href="http://www.xach.com/lisp/salza2.tgz">http://www.xach.com/lisp/salza2.tgz</a>
 
 </blockquote>
+
+
+<h3>Contents</h3>
+
+<ol>
+
+  <li> <a href='#sect-overview-and-limitations'>Overview and Limitations</a>
+
+  <li> <a href='#sect-dictionary'>Dictionary</a>
+
+    <ul>
+      <li> <a href='#sect-compressors'>Compressors</a>
+
+	<ul>
+	  <li> <a href='#deflate-compressor'><tt>deflate-compressor</tt></a>
+	  <li> <a href='#zlib-compressor'><tt>zlib-compressor</tt></a>
+	  <li> <a href='#gzip-compressor'><tt>gzip-compressor</tt></a>
+	  <li> <a href='#callback'><tt>callback</tt></a>
+	  <li> <a href='#compress-octet'><tt>compress-octet</tt></a>
+	  <li> <a href='#compress-octet-vector'><tt>compress-octet-vector</tt></a>
+	  <li> <a href='#finish-compression'><tt>finish-compression</tt></a>
+	  <li> <a href='#reset'><tt>reset</tt></a>
+	  <li> <a href='#with-compressor'><tt>with-compressor</tt></a>
+	</ul>
+
+      <li> <a href='#sect-custom-compressors'>Custom Compressors</a>
+
+	<ul>
+	  <li> <a href='#write-bits'><tt>write-bits</tt></a>
+	  <li> <a href='#write-octet'><tt>write-octet</tt></a>
+	  <li> <a href='#start-data-format'><tt>start-data-format</tt></a>
+	  <li> <a href='#process-input'><tt>process-input</tt></a>
+	  <li> <a href='#finish-data-format'><tt>finish-data-format</tt></a>
+	</ul>
+
+      <li> <a href='#sect-checksums'>Checksums</a>
+
+	<ul>
+	  <li> <a href='#adler32-checksum'><tt>adler32-checksum</tt></a>
+	  <li> <a href='#crc32-checksum'><tt>crc32-checksum</tt></a>
+	  <li> <a href='#update'><tt>update</tt></a>
+	  <li> <a href='#result'><tt>result</tt></a>
+	  <li> <a href='#result-octets'><tt>result-octets</tt></a>
+	</ul>
+
+      <li> <a href='sect-shortcuts'>Shortcuts</a>
+
+	<ul>
+	  <li> <a href='#make-stream-output-callback'><tt>make-stream-output-callback</tt></a>
+	  <li> <a href='#gzip-stream'><tt>gzip-stream</tt></a>
+	  <li> <a href='#gzip-file'><tt>gzip-file</tt></a>
+	  <li> <a href='#compress-data'><tt>compress-data</tt></a>
+	</ul>
+    </ul>
+
+  <li> <a href='#references'>References</a>
+
+  <li> <a href='#feedback'>Acknowledgements and Feedback</a>
+
+</ol>
+
 
 <a name='sect-overview-and-limitations'><h3>Overview and Limitations</h3></a>
 
@@ -50,6 +111,13 @@ license</a>. The current version is 1.0, released on December XXXths,
   of <a href='#deflate-compressor'><tt>DEFLATE-COMPRESSOR</tt></a>
   with a few methods implemented for the protocol.
 
+<p>Salza2 is the successor
+to <a href="http://cliki.net/Salza">Salza</a>, but it is not
+backwards-compatible. Among other changes, Salza2 drops support for
+compressing Lisp character data, since the compression formats are
+octet-based and obtaining encoded octets from Lisp characters varies
+from implementation to implementation.
+
 <p>There are a number of functions that provide a simple interface to
   specific tasks such as gzipping a file or compressing a single
   vector.
@@ -60,15 +128,12 @@ license</a>. The current version is 1.0, released on December XXXths,
   data size.
 
 
+<a name='sect-dictionary'><h3>Dictionary</h3></a>
 
-<a name='sect-examples'><h3>Examples</h3></a>
-
-
-
+<p>The following symbols are exported from the SALZA2 package.
 
 
-
-<a name='sect-compressors'><h3>Compressors</h3></a>
+<a name='sect-compressors'><h4>Compressors</h4></a>
 
 <p><a name='deflate-compressor'
 ><a name='zlib-compressor'><a name='gzip-compressor'>[Standard
@@ -176,7 +241,7 @@ is implicitly called on the compressor at the end of evaluation.
 </blockquote>
 
 
-<a name="sect-custom-compressors"><h3>Custom Compressors</h3></a>
+<a name='sect-custom-compressors'><h4>Custom Compressors</h4></a>
 
 <p>Compressor objects follow a protocol that makes it easy to create
   specialized data formats. For example, the ZLIB data format is
@@ -214,6 +279,9 @@ is implicitly called on the compressor at the end of evaluation.
     (write-octet (ldb (byte 8 16) length) compressor)
     (write-octet (ldb (byte 8  8) length) compressor)
     (write-octet (ldb (byte 8  0) length) compressor)))
+
+(defmethod <a href='#reset'>reset</a> :after ((compressor foo-compressor))
+  (setf (data-length compressor) 0))
 </pre>
 
 
@@ -279,7 +347,7 @@ directly, but may be specialized.
 </blockquote>
 
 
-<a name='sect-checksums'><h3>Checksums</h3></a>
+<a name='sect-checksums'><h4>Checksums</h4></a>
 
 <p>Checksums are used in several data formats to check data
   integrity. For example, PNG uses a CRC32 checksum for its chunks of
@@ -321,8 +389,89 @@ in MSB order.
 </blockquote>
 
 
+<a name='sect-shortcuts'><h4>Shortcuts</h4></a>
+
+<p>Some shortcuts for common compression tasks are available.
+
+<p><a name='make-stream-output-callback'>[Function]</a><br>
+<b>make-stream-output-callback</b> <i>stream</i> => <i>callback</i>>
+
+<blockquote>
+Creates and returns a callback function that writes all compressed
+data to <i>stream</i>. It is defined like this:
+
+<pre>
+(defun make-stream-output-callback (stream)
+  (lambda (buffer end)
+    (write-sequence buffer stream :end end)))
+</pre>
+</blockquote>
+
+<p><a name='gzip-stream'>[Function]</a><br>
+<b>gzip-stream</b> <i>input-stream</i> <i>output-stream</i> => |
+
+<blockquote>
+Compresses all data read from <i>input-stream</i> and writes the
+compressed data to <i>output-stream</i>.
+</blockquote>
 
 
+<p><a name='gzip-file'>[Function]</a><br>
+<b>gzip-file</b> <i>input-file</i> <i>output-file</i> => <i>pathname</i>
+
+<blockquote>
+Compresses <i>input-file</i> and writes the compressed data
+to <i>output-file</i>.
+</blockquote>
 
 
+<p><a name='compress-data'>[Function]</a><br>
+<b>compress-data</b> <i>data</i> <i>compressor-designator</i> 
+<tt>&amp;rest</tt> <i>initargs</i> => <i>compressed-data</i>
+
+<blockquote>
+Compresses the octet vector <i>data</i> and returns the compressed
+data as an octet vector. <i>compressor-designator</i> should be either
+a compressor object, designating itself, or a symbol, designating a
+compressor created as with <tt>(apply #'make-instance
+compressor-designator initargs)</tt>.
+
+<p>For example:
+
+<pre>
+* <b>(compress-data (sb-ext:string-to-octets "Hello, hello, hello, hello world.") 
+                 'zlib-compressor)</b>
+#(8 153 243 72 205 201 201 215 81 200 192 164 20 202 243 139 114 82 244 0 194 64 11 139)
+</pre>
+</blockquote>
+
+
+<a name='references'><h3>References</h3></a>
+
+<ul>
+
+<li> Deutsch and
+Gailly, <a href='http://ietf.org/rfc/rfc1950.txt'>ZLIB Compressed Data
+Format Specification version 3.3 (RFC 1950)</a>
+
+<li> Deutsch, <a href='http://ietf.org/rfc/rfc1951.txt'>DEFLATE
+Compressed Data Format Specification version 1.3 (RFC 1951)</a>
+
+<li> Deutsch, <a href='http://ietf.org/rfc/rfc1952.txt'>GZIP file
+format specification version 4.3 (RFC 1952)</a>
+
+<li>
+Wikipedia, <a href='http://en.wikipedia.org/wiki/Rabin-Karp_string_search_algorithm'>Rabin-Karp
+string search algorithm</a>
+
+</ul>
+
+
+<a name='sect-feedback'><h3>Acknowledgements &amp; Feedback</h3></a>
+
+<p>Thanks to Paul Khuong for his help optimizing the modulo-8191
+hashing.
+
+<p>Please direct any comments, questions, bug reports, or other
+feedback to <a href='mailto:xach@xach.com'>Zach Beane</a>.
 
