@@ -75,6 +75,7 @@ license</a>. The current version is 2.0, released on December 31st,
 	  <li> <a href='#update'><tt>update</tt></a>
 	  <li> <a href='#result'><tt>result</tt></a>
 	  <li> <a href='#result-octets'><tt>result-octets</tt></a>
+	  <li> <a href='#reset-checksum'><tt>reset</tt></a>
 	</ul>
 
       <li> <a href='sect-shortcuts'>Shortcuts</a>
@@ -144,9 +145,8 @@ from implementation to implementation.
 
 <blockquote>
 Instances of these classes may be created via make-instance. The only
-supported initarg is <tt>:CALLBACK</tt>
-(see <a href='#callback'><tt>CALLBACK</tt></a> for the expected
-value).
+supported initarg is <tt>:CALLBACK</tt>.
+See <a href='#callback'><tt>CALLBACK</tt></a> for the expected value.
 </blockquote>
 
 
@@ -160,16 +160,8 @@ Gets or sets the callback function of <i>compressor</i>. The callback
 should be a function of two arguments, an octet vector and an end
 index, and it should process all octets from the start of the vector
 below the end index as the compressed output data stream of the
-compressor.
-
-<p>For example, you could create a callback that writes the compressed
-  data format to a stream like this:
-
-<pre>
-(defun make-stream-callback (stream)
-  (lambda (buffer end)
-    (write-sequence buffer stream :end end)))
-</pre>
+compressor. See <a href='#make-stream-output-callback'><tt>MAKE-STREAM-OUTPUT-CALLBACK</tt></a>
+for an example callback.
 
 </blockquote>
 
@@ -177,8 +169,7 @@ compressor.
 <b>compress-octet</b> <i>octet</i> <i>compressor</i> => |
 
 <blockquote>
-Adds <i>octet</i> to <i>compressor</i> to be compressed. Should be
-called directly from programs that need to compress data.
+Adds <i>octet</i> to <i>compressor</i> to be compressed.
 </blockquote>
 
 
@@ -192,8 +183,7 @@ compressed, beginning with the octet at <i>start</i> and ending at the
 octet at
 <i>end</i> - 1. If <i>start</i> is not specified, it defaults to
 0. If <i>end</i> is not specified, it defaults to the total length
-of <i>vector</i>. Should be called directly from programs that need to
-compress data. Equivalent to (but much more efficient than) the
+of <i>vector</i>. Equivalent to (but much more efficient than) the
 following:
 
 <pre>
@@ -207,8 +197,8 @@ following:
 <p><a name='finish-compression'>[Generic function]</a><br>
 <b>finish-compression</b> <i>compressor</i> => |
 
-<blockquote>Compresses any pending output data, concludes the data
-  format for <i>compressor</i> with
+<blockquote>Compresses any pending data, concludes the data format
+  for <i>compressor</i> with
 <a href='#finish-data-format'><tt>FINISH-DATA-FORMAT</tt></a>, and
 invokes the user callback for the final octets of the compressed data
 format.
@@ -219,9 +209,11 @@ format.
 <b>reset</b> <i>compressor</i> => |
 
 <blockquote>
-Resets the internal state of <i>compressor</i> and
+The default method
+for <a href='#deflate-compressor'><tt>DEFLATE-COMPRESSOR</tt></a>
+objects resets the internal state of <i>compressor</i> and
 calls <a href='#start-data-format'><tt>START-DATA-FORMAT</tt></a>. This
-can be used to re-use a single compressor object for multiple
+allows the re-use of a single compressor object for multiple
 compression tasks.
 </blockquote>
 
@@ -233,10 +225,10 @@ compression tasks.
 <tt>&amp;body</tt> <i>body</i> => |
 
 <blockquote>
-Evaluates <i>body</i> with <i>var</i> bound to a newly created
-compressor object of class <i>class</i>. <i>callback</i> should be a
-function as described
-by <a href='#callback'><tt>CALLBACK</tt></a>. <a href='#finish-compression'><tt>FINISH-COMPRESSION</tt></a>
+Evaluates <i>body</i> with <i>var</i> bound to a new compressor
+created as
+with <tt>(apply&nbsp;#'make-instance&nbsp;class&nbsp;initargs)</tt>.
+<a href='#finish-compression'><tt>FINISH-COMPRESSION</tt></a>
 is implicitly called on the compressor at the end of evaluation.
 </blockquote>
 
@@ -386,6 +378,14 @@ Returns the accumulated value of <i>checksum</i> as an integer.
 <blockquote>
 Returns the individual octets of <i>checksum</i> as a list of octets,
 in MSB order.
+</blockquote>
+
+<p><a name='reset-checksum'>[Generic function]<br>
+<b>reset</b> <i>checksum</i> => |
+
+<blockquote>
+The default method for checksum objects resets the internal state
+of <i>checksum</i> so it may be re-used.
 </blockquote>
 
 
