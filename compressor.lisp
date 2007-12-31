@@ -70,7 +70,6 @@ with OUTPUT, a starting offset, and the count of pending data."
                  output
                  (logxor offset #x8000)
                  +input-limit+))
-      (dtrace offset i j)
       (replace output input :start1 offset :start2 i :end2 j)
       (setf offset (logand +input-limit+ (+ offset +input-limit+)))
       (setf i j
