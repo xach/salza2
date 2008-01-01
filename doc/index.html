@@ -16,16 +16,15 @@
 <blockquote class='abstract'>
 <h3>Abstract</h3>
 
-<p>Salza2 is a library for creating compressed data in the ZLIB,
-DEFLATE, or GZIP data formats, described in
+<p>Salza2 is a Common Lisp library for creating compressed data in the
+ZLIB, DEFLATE, or GZIP data formats, described in
 <a href="http://ietf.org/rfc/rfc1950.txt">RFC 1950</a>,
 <a href="http://ietf.org/rfc/rfc1951.txt">RFC 1951</a>, and
 <a href="http://ietf.org/rfc/rfc1952.txt">RFC 1952</a>, respectively.
-It is written in pure Common Lisp and does not use any external
-libraries for compression. It does not yet support decompression.
-Salza2 is available under a <a href="COPYING.txt">BSD-like
-license</a>. The current version is 2.0, released on December 31st,
-2007.
+It does not use any external libraries for compression. It does not
+yet support decompression.  Salza2 is available under
+a <a href="COPYING.txt">BSD-like license</a>. The current version is
+2.0, released on December 31st, 2007.
 
 <p class='download'>Download shortcut:
 
@@ -43,7 +42,7 @@ license</a>. The current version is 2.0, released on December 31st,
   <li> <a href='#sect-dictionary'>Dictionary</a>
 
     <ul>
-      <li> <a href='#sect-compressors'>Compressors</a>
+      <li> <a href='#sect-standard-compressors'>Standard Compressors</a>
 
 	<ul>
 	  <li> <a href='#deflate-compressor'><tt>deflate-compressor</tt></a>
@@ -57,7 +56,7 @@ license</a>. The current version is 2.0, released on December 31st,
 	  <li> <a href='#with-compressor'><tt>with-compressor</tt></a>
 	</ul>
 
-      <li> <a href='#sect-custom-compressors'>Custom Compressors</a>
+      <li> <a href='#sect-customizing-compressors'>Customizing Compressors</a>
 
 	<ul>
 	  <li> <a href='#write-bits'><tt>write-bits</tt></a>
@@ -134,11 +133,10 @@ from implementation to implementation.
 <p>The following symbols are exported from the SALZA2 package.
 
 
-<a name='sect-compressors'><h4>Compressors</h4></a>
+<a name='sect-standard-compressors'><h4>Standard Compressors</h4></a>
 
 <p><a name='deflate-compressor'
-><a name='zlib-compressor'><a name='gzip-compressor'>[Standard
-        classes]</a></a></a><br>
+><a name='zlib-compressor'><a name='gzip-compressor'>[Classes]</a></a></a><br>
 <b>deflate-compressor</b><br>
 <b>zlib-compressor</b><br>
 <b>gzip-compressor</b>
@@ -201,7 +199,10 @@ following:
   for <i>compressor</i> with
 <a href='#finish-data-format'><tt>FINISH-DATA-FORMAT</tt></a>, and
 invokes the user callback for the final octets of the compressed data
-format.
+format. This function must be called at the end of compression to
+ensure the validity of the data format; it is called implicitly
+by <a href='#with-compressor'><tt>WITH-COMPRESSOR</tt></a>.
+
 </blockquote>
 
 
@@ -233,13 +234,13 @@ is implicitly called on the compressor at the end of evaluation.
 </blockquote>
 
 
-<a name='sect-custom-compressors'><h4>Custom Compressors</h4></a>
+<a name='sect-customizing-compressors'><h4>Customizing Compressors</h4></a>
 
 <p>Compressor objects follow a protocol that makes it easy to create
-  specialized data formats. For example, the ZLIB data format is
-  essentially the same as the DEFLATE format with an additional header
-  and a trailing checksum; this is implemented by creating a new class
-  and adding a few new methods to the generic functions below.
+  specialized data formats. The ZLIB data format is essentially the
+  same as the DEFLATE format with an additional header and a trailing
+  checksum; this is implemented by creating a new class and adding a
+  few new methods to the generic functions below.
 
 <p>For example, consider a new compressed data format FOO that
   encapsulates a DEFLATE data stream but adds four signature octets,
