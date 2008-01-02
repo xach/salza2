@@ -78,6 +78,16 @@ with OUTPUT, a starting offset, and the count of pending data."
       (funcall compress-fun output (logxor offset #x8000) +input-limit+))
     result))
 
+(defun reinitialize-bitstream-funs (compressor bitstream)
+  (setf (literal-fun compressor)
+        (make-huffman-writer *fixed-huffman-codes* bitstream)
+        (length-fun compressor)
+        (make-huffman-writer *length-codes* bitstream)
+        (distance-fun compressor)
+        (make-huffman-writer *distance-codes* bitstream)
+        (compress-fun compressor)
+        (make-compress-fun compressor)))
+
 
 ;;; Class & protocol
 
@@ -195,7 +205,10 @@ with OUTPUT, a starting offset, and the count of pending data."
 ;;; A few methods defer to the bitstream
 
 (defmethod (setf callback) (new-fun (compressor deflate-compressor))
-  (setf (callback (bitstream compressor)) new-fun))
+  (let ((bitstream (bitstream compressor)))
+    (prog1
+        (setf (callback bitstream) new-fun)
+      (reinitialize-bitstream-funs compressor bitstream))))
 
 (defmethod write-bits (code size (compressor deflate-compressor))
   (write-bits code size (bitstream compressor)))
