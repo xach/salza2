@@ -86,7 +86,7 @@
     (when (= offset #.+bitstream-buffer-size+)
       (funcall callback buffer #.+bitstream-buffer-size+)
       (setf offset 0
-            bits 8))
+            bits 0))
     (setf (aref buffer offset) octet
           bits (+ bits 8))
     (when (= (1+ offset) #.+bitstream-buffer-size+)
