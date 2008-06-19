@@ -37,8 +37,8 @@
 
 (defmethod start-data-format :before ((compressor zlib-compressor))
   ;; FIXME: Replace these naked constants with symbolic constants.
-  (write-octet 8 compressor)
-  (write-octet 153 compressor))
+  (write-octet #x78 compressor)
+  (write-octet #x9C compressor))
 
 (defmethod process-input :after ((compressor zlib-compressor) input start count)
   (let ((checksum (adler32 compressor)))
