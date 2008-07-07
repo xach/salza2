@@ -42,7 +42,8 @@
                (:file "adler32"
                       :depends-on ("checksum"))
                (:file "crc32"
-                      :depends-on ("checksum"))
+                      :depends-on ("checksum"
+                                   "types"))
                (:file "chains"
                       :depends-on ("package"
                                    "specials"))
