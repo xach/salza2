@@ -27,7 +27,7 @@
 ;;;
 
 (asdf:defsystem #:salza2
-  :version "2.0.3"
+  :version "2.0.4"
   :components ((:file "package")
                (:file "reset"
                       :depends-on ("package"))
@@ -49,6 +49,7 @@
                                    "specials"))
                (:file "bitstream"
                       :depends-on ("package"
+                                   "specials"
                                    "reset"))
                (:file "matches"
                       :depends-on ("package"
