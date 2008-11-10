@@ -40,7 +40,8 @@
                       :depends-on ("package"
                                    "reset"))
                (:file "adler32"
-                      :depends-on ("checksum"))
+                      :depends-on ("checksum"
+                                   "types"))
                (:file "crc32"
                       :depends-on ("checksum"
                                    "types"))
