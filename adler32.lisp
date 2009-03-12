@@ -44,8 +44,9 @@
                (s1 adler-low)
                (s2 adler-high))
            (declare (type (integer 0 32658) length)
-                    (type (integer 0 16) i k)
-                    (type (integer 0 65536) s1 s2))
+                    (type (integer 0 16) k)
+                    (type array-index i)
+                    (type (unsigned-byte 32) s1 s2))
            (tagbody
             loop
               (setf k (min length 16))
