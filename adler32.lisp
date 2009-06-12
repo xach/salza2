@@ -43,9 +43,9 @@
                (k 0)
                (s1 adler-low)
                (s2 adler-high))
-           (declare (type (integer 0 32658) length)
-                    (type (integer 0 16) k)
+           (declare (type (integer 0 16) k)
                     (type array-index i)
+                    (type (unsigned-byte 16) length)
                     (type (unsigned-byte 32) s1 s2))
            (tagbody
             loop
