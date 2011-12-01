@@ -27,7 +27,7 @@
 ;;;
 
 (asdf:defsystem #:salza2
-  :version "2.0.7"
+           :version "2.0.8"
   :description "Create compressed data in the ZLIB, DEFLATE, or GZIP
   data formats"
   :components ((:file "package")
