@@ -41,7 +41,8 @@
                       :depends-on ("package"))
                (:file "types"
                       :depends-on ("package"
-                                   "specials"))
+                                   "specials"
+                                   "types"))
                (:file "checksum"
                       :depends-on ("package"
                                    "reset"))
@@ -53,10 +54,11 @@
                                    "types"))
                (:file "chains"
                       :depends-on ("package"
-                                   "specials"))
+                                   "types"))
                (:file "bitstream"
                       :depends-on ("package"
                                    "specials"
+                                   "types"
                                    "reset"))
                (:file "matches"
                       :depends-on ("package"
