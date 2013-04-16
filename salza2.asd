@@ -27,7 +27,7 @@
 ;;;
 
 (asdf:defsystem #:salza2
-           :version "2.0.8"
+  :version "2.0.8"
   :description "Create compressed data in the ZLIB, DEFLATE, or GZIP
   data formats"
   :components ((:file "package")
@@ -36,11 +36,9 @@
                (:file "specials"
                       :depends-on ("package"))
                (:file "types"
-                      :depends-on ("package"
-                                   "specials"))
+                      :depends-on ("specials"))
                (:file "checksum"
-                      :depends-on ("package"
-                                   "reset"))
+                      :depends-on ("reset"))
                (:file "adler32"
                       :depends-on ("checksum"
                                    "types"))
@@ -48,11 +46,10 @@
                       :depends-on ("checksum"
                                    "types"))
                (:file "chains"
-                      :depends-on ("package"
-                                   "specials"))
+                      :depends-on ("types"))
                (:file "bitstream"
-                      :depends-on ("package"
-                                   "specials"
+                      :depends-on ("specials"
+                                   "types"
                                    "reset"))
                (:file "matches"
                       :depends-on ("package"
@@ -66,8 +63,7 @@
                       :depends-on ("huffman"
                                    "bitstream"))
                (:file "compressor"
-                      :depends-on ("package"
-                                   "closures"
+                      :depends-on ("closures"
                                    "utilities"
                                    "specials"
                                    "bitstream"
@@ -75,17 +71,14 @@
                (:file "utilities"
                       :depends-on ("package"))
                (:file "zlib"
-                      :depends-on ("package"
-                                   "adler32"
+                      :depends-on ("adler32"
                                    "reset"
                                    "compressor"))
                (:file "gzip"
-                      :depends-on ("package"
-                                   "crc32"
+                      :depends-on ("crc32"
                                    "reset"
                                    "compressor"))
                (:file "user"
-                      :depends-on ("package"
-                                   "compressor"
+                      :depends-on ("compressor"
                                    "zlib"
                                    "gzip"))))
