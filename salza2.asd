@@ -29,7 +29,7 @@
 (asdf:defsystem #:salza2
   :author "Zachary Beane <xach@xach.com>"
   :license "BSD"
-  :version "2.0.8"
+  :version "2.0.9"
   :description "Create compressed data in the ZLIB, DEFLATE, or GZIP
   data formats"
   :components ((:file "package")
