@@ -32,6 +32,7 @@
   :version "2.0.9"
   :description "Create compressed data in the ZLIB, DEFLATE, or GZIP
   data formats"
+  :depends-on ("trivial-gray-streams")
   :components ((:file "package")
                (:file "reset"
                       :depends-on ("package"))
@@ -90,4 +91,6 @@
                       :depends-on ("package"
                                    "compressor"
                                    "zlib"
-                                   "gzip"))))
+                                   "gzip"))
+               (:file "stream"
+                      :depends-on ("package"))))

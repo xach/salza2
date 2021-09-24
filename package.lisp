@@ -58,4 +58,7 @@
    #:make-stream-output-callback
    #:gzip-stream
    #:gzip-file
-   #:compress-data))
+   #:compress-data
+   ;; stream
+   #:make-compressing-stream
+   #:stream-closed-error))
