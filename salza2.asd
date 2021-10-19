@@ -29,7 +29,7 @@
 (asdf:defsystem #:salza2
   :author "Zachary Beane <xach@xach.com>"
   :license "BSD"
-  :version "2.0.9"
+  :version "2.1"
   :description "Create compressed data in the ZLIB, DEFLATE, or GZIP
   data formats"
   :depends-on ("trivial-gray-streams")
@@ -99,7 +99,7 @@
 (asdf:defsystem #:salza2/test
   :author "Zachary Beane <xach@xach.com>"
   :license "BSD"
-  :version "2.0.9"
+  :version "2.1"
   :description "Tests for Salza2 system"
   :depends-on ("salza2" "parachute" "flexi-streams" "chipz")
   :perform (asdf:test-op (op c)
