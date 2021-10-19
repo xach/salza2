@@ -1,5 +1,5 @@
 ;;;
-;;; Copyright (c) 2007-2021 Zachary Beane and contributors, All Rights Reserved
+;;; Copyright (c) 2021 Eric Timmons, All Rights Reserved
 ;;;
 ;;; Redistribution and use in source and binary forms, with or without
 ;;; modification, are permitted provided that the following conditions
@@ -26,3 +26,6 @@
 ;;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;;
 
+(defpackage #:salza2-test
+  (:use #:cl
+        #:parachute))

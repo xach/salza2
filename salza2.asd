@@ -32,6 +32,8 @@
   :version "2.0.9"
   :description "Create compressed data in the ZLIB, DEFLATE, or GZIP
   data formats"
+  :depends-on ("trivial-gray-streams")
+  :in-order-to ((asdf:test-op (asdf:test-op "salza2/test")))
   :components ((:file "package")
                (:file "reset"
                       :depends-on ("package"))
@@ -90,4 +92,22 @@
                       :depends-on ("package"
                                    "compressor"
                                    "zlib"
-                                   "gzip"))))
+                                   "gzip"))
+               (:file "stream"
+                      :depends-on ("package"))))
+
+(asdf:defsystem #:salza2/test
+  :author "Zachary Beane <xach@xach.com>"
+  :license "BSD"
+  :version "2.0.9"
+  :description "Tests for Salza2 system"
+  :depends-on ("salza2" "parachute" "flexi-streams" "chipz")
+  :perform (asdf:test-op (op c)
+                         (unless (eql :passed
+                                      (uiop:symbol-call
+                                       :parachute :status
+                                       (uiop:symbol-call :parachute :test :salza2-test)))
+                           (error "Tests failed")))
+  :pathname "test/"
+  :components ((:file "package")
+               (:file "stream" :depends-on ("package"))))

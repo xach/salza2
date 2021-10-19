@@ -86,6 +86,14 @@ The latest version is 2.0.9, released on July 18th, 2013.
 	  <li> <a href='#gzip-file'><tt>gzip-file</tt></a>
 	  <li> <a href='#compress-data'><tt>compress-data</tt></a>
 	</ul>
+
+      <li> <a href='#sect-gray-streams'>Gray Streams</a>
+
+    <ul>
+      <li> <a href='#make-compressing-stream'><tt>make-compressing-stream</tt></a>
+      <li> <a href='#stream-closed-error'><tt>stream-closed-error</tt></a>
+    </ul>
+
     </ul>
 
   <li> <a href='#sect-references'>References</a>
@@ -449,6 +457,30 @@ compressor-designator initargs)</tt>.
 </pre>
 </blockquote>
 
+<a name='sect-gray-streams'><h4>Gray Streams</h4></a>
+
+<p> Salza2 includes support for creating a Gray stream that wraps another
+  stream and transparently compresses the data written to it.
+
+<p><a name='make-compressing-stream'>[Function]</a><br>
+<b>make-compressing-stream</b> <i>compressor-type</i> <i>stream</i>
+=> <i>compressing-stream</i>
+
+<blockquote>
+Return a <i>compressing-stream</i> that transparently compresses its input
+and writes it to <i>stream</i>. <i>compressor-type</i> is a symbol naming the
+compressor class to use.
+
+<p>Closing the returned <i>compressing-stream</i> merely finalizes the compression
+and does not close <i>stream</i>.
+</blockquote>
+
+<p><a name='stream-closed-error'>[Condition]</a><br>
+<b>stream-closed-error</b> <i>stream-error</i>
+
+<blockquote>
+Signaled when attempting to write to a closed <i>compressing-stream</i>.
+</blockquote>
 
 <a name='sect-references'><h3>References</h3></a>
 
