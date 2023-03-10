@@ -294,6 +294,10 @@ with OUTPUT, a starting offset, and the count of pending data."
   (reset (bitstream compressor))
   (start-data-format compressor))
 
+(defmacro with-compressing-stream ((type stream output-stream) &body body)
+  `(with-open-stream (,stream (salza2:make-compressing-stream ,type
+                               ,output-stream))
+     ,@body))
 
 (defmacro with-compressor ((var class
                                 &rest initargs
