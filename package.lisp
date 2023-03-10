@@ -61,4 +61,5 @@
    #:compress-data
    ;; stream
    #:make-compressing-stream
+   #:with-compressing-stream
    #:stream-closed-error))
